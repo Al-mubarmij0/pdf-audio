@@ -1,50 +1,64 @@
+
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-3xl mx-auto py-6">
-<a href="{{ route('convert.history') }}">📚 My Conversion History</a>
+<div class="container py-5" style="max-width: 800px;">
 
-    
+    <div class="mb-4">
+        <a href="{{ route('convert.history') }}" class="btn btn-outline-secondary">
+            📚 My Conversion History
+        </a>
+    </div>
 
     @if(session('success'))
-        <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
 
     @if($history->count())
-        <div class="space-y-6">
+        <div class="d-grid gap-4">
             @foreach($history as $item)
-                <div class="bg-white p-4 rounded shadow">
-                    <div class="flex justify-between items-center mb-2">
-                        <div>
-                            <p class="text-lg font-semibold text-gray-800">📄 {{ $item->file_name }}</p>
-                            <p class="text-sm text-gray-500">Converted on {{ $item->created_at->format('F j, Y, g:i A') }}</p>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <h5 class="card-title mb-0">📄 {{ $item->file_name }}</h5>
+                                <small class="text-muted">
+                                    Converted on {{ $item->created_at->format('F j, Y, g:i A') }}
+                                </small>
+                            </div>
+                            <form action="{{ route('convert.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this conversion?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    🗑 Delete
+                                </button>
+                            </form>
                         </div>
-                        <form action="{{ route('convert.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this conversion?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm">🗑 Delete</button>
-                        </form>
+
+                        @if($item->summary)
+                            <blockquote class="blockquote">
+                                <p class="mb-2 text-muted fst-italic">"{{ $item->summary }}"</p>
+                            </blockquote>
+                        @endif
+
+                        <audio controls class="w-100 mt-2">
+                            <source src="{{ asset($item->audio_path) }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
                     </div>
-
-                    @if($item->summary)
-                        <p class="text-gray-700 text-sm italic mb-2">"{{ $item->summary }}"</p>
-                    @endif
-
-                    <audio controls class="w-full mt-2">
-                        <source src="{{ asset($item->audio_path) }}" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
                 </div>
             @endforeach
         </div>
 
-        <div class="mt-6">
+        <div class="mt-4">
             {{ $history->links() }}
         </div>
     @else
-        <p class="text-gray-600 text-center">No conversions yet.</p>
+        <div class="alert alert-info text-center">
+            No conversions yet.
+        </div>
     @endif
 </div>
 @endsection

@@ -1,17 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
-<h2 class="text-2xl font-semibold mb-4">Upload PDF to Convert</h2>
+<div class="container py-5" style="max-width: 600px;">
+    <h2 class="text-center mb-4 fw-bold">📄 Upload PDF to Convert</h2>
 
-<form action="{{ route('convert.submit') }}" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded shadow space-y-4">
-    @csrf
-    <div>
-        <label for="pdf_file" class="block font-medium">Select PDF file:</label>
-        <input type="file" name="pdf_file" id="pdf_file" class="border w-full p-2 rounded mt-1" required>
+    <div class="card shadow">
+        <div class="card-body">
+            <form action="{{ route('convert.submit') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="mb-3">
+                    <label for="pdf_file" class="form-label">Select PDF File:</label>
+                    <input 
+                        type="file" 
+                        name="pdf_file" 
+                        id="pdf_file" 
+                        accept=".pdf" 
+                        required 
+                        class="form-control"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    🎧 Convert to Audio
+                </button>
+            </form>
+        </div>
     </div>
-
-    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Convert to Audio
-    </button>
-</form>
+</div>
 @endsection
